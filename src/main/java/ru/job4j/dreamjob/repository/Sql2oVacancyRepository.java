@@ -20,12 +20,13 @@ public class Sql2oVacancyRepository implements VacancyRepository {
     public Vacancy save(Vacancy vacancy) {
         try (var connection = sql2o.open()) {
             var sql = """
-                      INSERT INTO vacancies(title, description, visible, city_id, file_id)
-                      VALUES (:title, :description, :visible, :cityId, :fileId)
+                      INSERT INTO vacancies(title, description, creation_date, visible, city_id, file_id)
+                      VALUES (:title, :description, :creationDate, :visible, :cityId, :fileId)
                       """;
             var query = connection.createQuery(sql, true)
                     .addParameter("title", vacancy.getTitle())
                     .addParameter("description", vacancy.getDescription())
+                    .addParameter("creationDate", vacancy.getCreationDate())
                     .addParameter("visible", vacancy.getVisible())
                     .addParameter("cityId", vacancy.getCityId())
                     .addParameter("fileId", vacancy.getFileId());
@@ -40,7 +41,6 @@ public class Sql2oVacancyRepository implements VacancyRepository {
         try (var connection = sql2o.open()) {
             var query = connection.createQuery("DELETE FROM vacancies WHERE id = :id");
             query.addParameter("id", id);
-            query.executeUpdate();
             var affectedRows = query.executeUpdate().getResult();
             return affectedRows > 0;
         }
