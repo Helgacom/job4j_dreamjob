@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sql2o.Sql2o;
-import org.sql2o.Sql2oException;
 import ru.job4j.dreamjob.configuration.DatasourceConfiguration;
 import ru.job4j.dreamjob.model.File;
 import ru.job4j.dreamjob.model.User;
@@ -13,7 +12,6 @@ import ru.job4j.dreamjob.model.User;
 import java.util.Properties;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class Sql2oUserRepositoryTest {
 
@@ -67,11 +65,9 @@ public class Sql2oUserRepositoryTest {
     }
 
     @Test
-    public void whenSameEmailAdd() {
-        sql2oUserRepository.save(new User(0, "email", "name1", "password1"));
-        var user2 = new User(0, "email", "name2", "password2");
-        assertThatThrownBy(() -> sql2oUserRepository.save(user2))
-                .isInstanceOf(Sql2oException.class);
+    public void whenSaveTheSameEmailUserThenEmptyResult() {
+        sql2oUserRepository.save(new User(0, "ya@ya.ru", "oleg", "1111"));
+        var user = sql2oUserRepository.save(new User(0, "ya@ya.ru", "victor", "1122"));
+        assertThat(user).isEmpty();
     }
-
 }

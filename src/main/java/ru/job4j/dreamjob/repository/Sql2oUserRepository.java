@@ -1,5 +1,7 @@
 package ru.job4j.dreamjob.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
 import ru.job4j.dreamjob.model.User;
@@ -15,6 +17,8 @@ public class Sql2oUserRepository implements UserRepository {
         this.sql2o = sql2o;
     }
 
+    private static final Logger LOG = LoggerFactory.getLogger(Sql2oUserRepository.class.getName());
+
     @Override
     public Optional<User> save(User user) {
         try (var connection = sql2o.open()) {
@@ -29,7 +33,10 @@ public class Sql2oUserRepository implements UserRepository {
             int generatedId = query.executeUpdate().getKey(Integer.class);
             user.setId(generatedId);
             return Optional.of(user);
+        } catch (Exception e) {
+            LOG.error("Email have been already taking by another user", e);
         }
+        return Optional.empty();
     }
 
     @Override
